@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": "1735307592056",
+      "name": "Leonel",
+      "country": "Algeria",
+      "cardsCount": 0
+    }
+  ],
+  "cards": [
+    {
+      "id": "1735307595530",
+      "content": "s",
+      "positionX": 335,
+      "positionY": 77,
+      "author": {
+        "id": "1735307592056",
+        "name": "Leonel",
+        "country": "Algeria",
+        "cardsCount": 0
+      },
+      "createdAt": "2024-12-27T13:53:19.466Z"
+    }
+  ],
+  "visitors": [
+    {
+      "userId": "1735306479949",
+      "lastSeen": 1735322026307
+    },
+    {
+      "userId": "1735299964015",
+      "lastSeen": 1735308937267
+    },
+    {
+      "userId": "1735307592056",
+      "lastSeen": 1735321917444
+    }
+  ]
+}
