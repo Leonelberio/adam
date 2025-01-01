@@ -37,28 +37,26 @@ const Canvas = () => {
       }).catch((error) => console.error("Error recording visitor:", error));
     }
   }, [user]);
-
-  // Fetch categories and countries for filters
   useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const [categoryRes, countryRes] = await Promise.all([
-          fetch("/api/categories"),
-          fetch("/api/countries"),
-        ]);
-
-        const categories = await categoryRes.json();
-        const countries = await countryRes.json();
-
-        setCategories(categories);
-        setCountries(countries);
-      } catch (error) {
-        console.error("Failed to fetch filters:", error);
-      }
+    const filterNodes = () => {
+      const filteredNodes = allNodes.filter((node) => {
+        const matchesSearch = node.data.content
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesCategory =
+          !selectedCategory || node.data.categoryId === selectedCategory;
+        const matchesCountry =
+          !selectedCountry || node.data.countryId === selectedCountry;
+  
+        return matchesSearch && matchesCategory && matchesCountry;
+      });
+  
+      setNodes(filteredNodes);
     };
-
-    fetchFilters();
-  }, []);
+  
+    filterNodes();
+  }, [searchQuery, selectedCategory, selectedCountry, allNodes]);
+  
 
   // Fetch initial cards (nodes) from the database
   useEffect(() => {
