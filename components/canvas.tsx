@@ -37,6 +37,32 @@ const Canvas = () => {
       }).catch((error) => console.error("Error recording visitor:", error));
     }
   }, [user]);
+
+
+  // Fetch categories and countries for filters
+useEffect(() => {
+  const fetchFilters = async () => {
+    try {
+      const [categoryRes, countryRes] = await Promise.all([
+        fetch("/api/categories"), // Replace with the actual endpoint for categories
+        fetch("/api/countries"), // Replace with the actual endpoint for countries
+      ]);
+
+      const fetchedCategories = await categoryRes.json();
+      const fetchedCountries = await countryRes.json();
+
+      setCategories(fetchedCategories);
+      setCountries(fetchedCountries);
+    } catch (error) {
+      console.error("Failed to fetch filters:", error);
+    }
+  };
+
+  fetchFilters();
+}, []);
+
+
+
   useEffect(() => {
     const filterNodes = () => {
       const filteredNodes = allNodes.filter((node) => {
