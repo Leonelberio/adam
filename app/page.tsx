@@ -1,9 +1,14 @@
 "use client";
 
-import Board from "@/components/Board";
+import Canvas from "@/components/canvas";
+import "reactflow/dist/style.css";
 
-export default function HomePage() {
-  return <Board />;
-}
+const Home = () => {
+  return (
+    <div style={{ height: "100vh" }}>
+     <Canvas/>
+    </div>
+  );
+};
 
-
+export default Home;

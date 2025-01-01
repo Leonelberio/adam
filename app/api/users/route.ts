@@ -1,66 +1,41 @@
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+
 export async function GET() {
   try {
-    // Fetch all users, including their cards and sessions for demonstration
     const users = await prisma.user.findMany({
-      include: {
-        cards: true,
-        sessions: true,
-      },
+      include: { country: true }, // Include related country information
     });
-
-    return new Response(JSON.stringify(users), { status: 200 });
+    return NextResponse.json(users);
   } catch (error) {
-    console.error("GET Users Error:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch users" }), {
-      status: 500,
-    });
+    console.error("Error fetching users:", error);
+    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
   }
 }
+
 
 export async function POST(req: Request) {
-  try {
-    const { name, email, password, country } = await req.json();
-
-    // Basic validation
-    if (!name || !email || !password || !country) {
-      return new Response(
-        JSON.stringify({ error: "Name, email, password, and country are required" }),
-        { status: 400 }
-      );
+    try {
+      const { name, email, password, countryId } = await req.json();
+  
+      // Validate required fields
+      if (!name || !email || !countryId) {
+        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      }
+  
+      // Create the user
+      const newUser = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password, // Hash password before storing if authentication is enabled
+          countryId,
+        },
+      });
+  
+      return NextResponse.json(newUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
     }
-
-    // Check if the email is already in use
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return new Response(
-        JSON.stringify({ error: "A user with this email already exists" }),
-        { status: 400 }
-      );
-    }
-
-    // Hash the password before storing (for real-world usage)
-    const bcrypt = await import("bcrypt");
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the new user
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        country,
-      },
-    });
-
-    return new Response(JSON.stringify(newUser), { status: 201 });
-  } catch (error) {
-    console.error("POST Users Error:", error);
-    return new Response(JSON.stringify({ error: "Failed to create user" }), {
-      status: 500,
-    });
   }
-}
