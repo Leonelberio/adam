@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect, useCallback } from "react";
 import ReactFlow, {
   addEdge,
@@ -9,12 +11,18 @@ import ReactFlow, {
 
 import CardNode from "./card-node";
 import "reactflow/dist/style.css";
+import { AuthButton } from "./auth/auth-button";
+import { useSession } from "next-auth/react"; // Import useSession hook
+
+
 
 const nodeTypes = {
   card: CardNode,
 };
 
 const Canvas = () => {
+  const { data: session } = useSession(); // Get the session object from the useSession hook
+  const userName = session?.user?.name; // Extract the user's name from the session object
   const [allNodes, setAllNodes] = useState<any[]>([]);
   const [nodes, setNodes] = useState<any[]>([]);
   const [edges, setEdges] = useState([]);
@@ -26,9 +34,9 @@ const Canvas = () => {
   const [onlineVisitors, setOnlineVisitors] = useState(0);
   const [topThinkers, setTopThinkers] = useState([]);
   const [topCountries, setTopCountries] = useState([]);
-  const user = { id: "userId" }; // Replace with actual logged-in user object
-
+  
   useEffect(() => {
+    const user = { id: "userId" }; // Replace with actual logged-in user object
     if (user) {
       fetch("/api/visitors", {
         method: "POST",
@@ -36,7 +44,7 @@ const Canvas = () => {
         body: JSON.stringify({ userId: user.id }),
       }).catch((error) => console.error("Error recording visitor:", error));
     }
-  }, [user]);
+  }, []);
 
 
   // Fetch categories and countries for filters
@@ -252,6 +260,19 @@ useEffect(() => {
 
   return (
     <div className="relative w-full h-screen">
+{userName ? (
+  <div className="absolute top-20 center-4 p-2 rounded bg-gray-100 shadow-md">
+    <span className="font-bold">Welcome, {userName}!</span>
+  </div>
+) : (
+  <div className="absolute top-20 center-4 p-2 rounded bg-gray-100 shadow-md">
+    <span className="font-bold">Not logged in</span>
+  </div>
+)}
+
+<div className="absolute top-4 right-4 z-10">
+  <AuthButton />
+</div>
       {/* Floating Visitors Count */}
       <div className="absolute top-4 left-4 p-2 rounded flex items-center gap-2">
         <div className="w-3 h-3 bg-green-500 rounded-full animate-blink"></div>

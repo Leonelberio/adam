@@ -11,3 +11,16 @@ export async function getUserFromDb(email: string, passwordHash: string) {
 
   return null;
 }
+
+
+export async function getUserWithPasswordFromDb(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (user) {
+    return { id: user.id, name: user.name, email: user.email, password: user.password };
+  }
+
+  return null;
+}

@@ -3,8 +3,8 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { ZodError } from "zod";
 import { signInSchema } from "@/lib/zod"; // Validation schema for credentials
-import { getUserFromDb } from "@/utils/db";
-import { saltAndHashPassword, comparePasswords } from "@/utils/password";
+import { getUserWithPasswordFromDb } from "@/utils/db";
+import { comparePasswords } from "@/utils/password";
 import prisma from "@/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter"
 
@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const { email, password } = await signInSchema.parseAsync(credentials);
 
           // Retrieve user from the database
-          const user = await getUserFromDb(email);
+          const user = await getUserWithPasswordFromDb(email, password);
 
           if (!user || !user.password) {
             throw new Error("Invalid credentials.");
